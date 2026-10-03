@@ -40,6 +40,7 @@ namespace ECommerce.Infrastructure
         public static IServiceCollection AddApplication(this IServiceCollection services)
         {
             services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<IBrandService, BrandService>();
             return services;
         }
     }
