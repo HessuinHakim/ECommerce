@@ -15,23 +15,27 @@ namespace ECommerce.Infrastructure.Configuration
         {
             builder.HasKey(x => x.Id);
 
-            builder.Property(x => x.OTP)
+            builder.Property(x => x.OtpHash)
                 .IsRequired()
-                .HasMaxLength(10);
+                .HasMaxLength(256);
 
             builder.Property(x => x.CreatedAt)
                 .IsRequired();
+            builder.Property(x => x.Purpose)
+                .IsRequired()
+                .HasMaxLength(50);
 
             builder.Property(x => x.ValidTo)
                 .IsRequired();
 
-            builder.Property(x => x.IsValid)
+            builder.Property(x => x.IsUsed)
                 .IsRequired();
 
             builder.HasOne<ApplicationUser>()
                 .WithMany()
                 .HasForeignKey(x => x.ApplicationUserId)
                 .OnDelete(DeleteBehavior.Cascade);
+            
         }
     }
 }
