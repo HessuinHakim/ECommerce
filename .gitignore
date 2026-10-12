@@ -480,3 +480,8 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+# Product Images
+ECommerce.API/wwwroot/images/products/*
+!ECommerce.API/wwwroot/images/products/.gitkeep
+logs/
