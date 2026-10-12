@@ -19,10 +19,9 @@ namespace ECommerce.Infrastructure.Identity
             _configuration = configuration;
         }
 
-        public (string Token, DateTime ExpiresAt) Generate(string email, string userId, IList<string> roles)
+        public (string Token, DateTime ExpiresAt) Generate(string userId, string email, IList<string> roles)
         {
-            // Implement JWT token generation logic here
-            // For demonstration purposes, we'll return a dummy token and expiration date
+           
             var claims = new List<Claim>
             {
                 new (ClaimTypes.NameIdentifier, userId),

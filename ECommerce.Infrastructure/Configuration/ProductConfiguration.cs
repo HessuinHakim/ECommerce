@@ -26,7 +26,8 @@ namespace ECommerce.Infrastructure.Configuration
             builder.Property(e => e.Rate)
                 .HasPrecision(3, 2);
 
-
+            builder.Property(p => p.RowVersion).
+                IsRowVersion();
 
             // Category relationship
 

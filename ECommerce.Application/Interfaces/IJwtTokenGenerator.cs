@@ -6,6 +6,6 @@ namespace ECommerce.Application.Interfaces
 {
     public interface IJwtTokenGenerator
     {
-        (string Token,DateTime ExpiresAt) Generate(string email, string userId, IList<string> roles);
+        (string Token,DateTime ExpiresAt) Generate(string userId, string email, IList<string> roles);
     }
 }

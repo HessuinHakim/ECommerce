@@ -1,4 +1,6 @@
-﻿namespace ECommerce.Domain.Entities
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace ECommerce.Domain.Entities
 {
     public class Product
     {
@@ -11,6 +13,9 @@
         public decimal Discount { get; set; }
         public int Quantity { get; set; }
         public double Rate { get; set; }
+
+        [Timestamp]
+        public byte[] RowVersion { get; set; } = default!;
         public bool IsDeleted { get; set; } = false;
         public int CategoryId { get; set; }
         public Category Category { get; set; } = default!;

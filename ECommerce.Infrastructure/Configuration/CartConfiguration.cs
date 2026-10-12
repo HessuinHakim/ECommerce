@@ -15,24 +15,15 @@ namespace ECommerce.Infrastructure.Configuration
 
             builder.HasKey(e => e.Id);
 
-
-            // Product Relationship
-
-            builder.HasOne(e => e.Product)
-                .WithMany()
-                .HasForeignKey(e => e.ProductId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            builder.Property(e=> e.Price)
-                .HasPrecision(18,2);
-
-
-            // ApplicationUser Relationship
             builder.HasOne<ApplicationUser>()
-            .WithMany()
-            .HasForeignKey(x => x.ApplicationUserId)
-            .OnDelete(DeleteBehavior.Cascade);
-
+           .WithMany()
+           .HasForeignKey(c => c.ApplicationUserId)
+           .OnDelete(DeleteBehavior.Cascade);
+            builder.HasIndex(c => new { c.ApplicationUserId, c.ProductId })
+                .IsUnique();
+            builder.HasOne(c => c.Product)
+                .WithMany()
+                .HasForeignKey(c => c.ProductId);
         }
     }
 }

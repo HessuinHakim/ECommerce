@@ -188,7 +188,7 @@ namespace ECommerce.Infrastructure.Identity
         private async Task<AuthResponse> BuildResponseAsync(ApplicationUser user)
         {
             var roles = await _userManager.GetRolesAsync(user);
-            var (token,expiresAt) = _jwtTokenGenerator.Generate(user.Email!, user.Id, roles);
+            var (token,expiresAt) = _jwtTokenGenerator.Generate(user.Id!, user.Email, roles);
             return new AuthResponse
             {
                 Succeeded = true,
