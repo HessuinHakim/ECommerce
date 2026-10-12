@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Text;
 using ECommerce.Application.DTOs.Files;
-using ECommerce.Application.DTOs.Products;
+using ECommerce.Application.DTOs.Pagination;
+using ECommerce.Application.DTOs.Products.Requests;
+using ECommerce.Application.DTOs.Products.Responses;
 using ECommerce.Application.Interfaces;
 using ECommerce.Domain.Entities;
 
@@ -23,36 +25,51 @@ namespace ECommerce.Application.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<IEnumerable<ProductListResponse>> GetAllAsync()
-
-
+        public async Task<PageResultDTO<ProductListResponse>> GetAllAsync(ProductQueryParamsDTO q)
         {
+            var search = q.Search?.Trim();
 
-            var include = new Expression<Func<Product,object>> []
+            Expression<Func<Product, bool>> filter = p =>
+                !p.IsDeleted && p.Status
+                && (search == null || p.Name.Contains(search))
+                && (q.CategoryId == null || p.CategoryId == q.CategoryId)
+                && (q.BrandId == null || p.BrandId == q.BrandId)
+                && (q.MinPrice == null || p.Price >= q.MinPrice)
+                && (q.MaxPrice == null || p.Price <= q.MaxPrice);
+
+            Func<IQueryable<Product>, IOrderedQueryable<Product>> orderBy = q.SortBy switch
             {
-                x => x.Category,
-                x => x.Brand
-            }
-            ;
-            var products  = await _productRepository.GetAsync(x=> !x.IsDeleted,tracked:false,includes:include);
+                "price" => x => x.OrderBy(p => p.Price).ThenBy(p => p.Id),
+                "price_desc" => x => x.OrderByDescending(p => p.Price).ThenBy(p => p.Id),
+                "name" => x => x.OrderBy(p => p.Name).ThenBy(p => p.Id),
+                _ => x => x.OrderByDescending(p => p.Id)   
+            };
 
-            return products.Select(p => new ProductListResponse
+            var includes = new Expression<Func<Product, object>>[] { p => p.Category, p => p.Brand };
+
+            var (items, total) = await _productRepository.GetPagedAsync(
+                filter, q.Page, q.PageSize, tracked: false, includes, orderBy);
+
+            return new PageResultDTO<ProductListResponse>
             {
-                Id = p.Id,
-                Name = p.Name,
-                Price = p.Price,
-                MainImg=p.MainImg,
-                Discount = p.Discount,
-                FinalPrice = p.Price - (p.Price * p.Discount / 100),
-                Rate = p.Rate,
-                Status = p.Status,
-                CategoryName = p.Category.Name,
-                BrandName = p.Brand.Name,
-
-                
-            });
+                Page = q.Page,
+                PageSize = q.PageSize,
+                TotalCount = total,
+                Items = items.Select(p => new ProductListResponse
+                {
+                    Id = p.Id,
+                    Name = p.Name,
+                    MainImg = p.MainImg,
+                    Price = p.Price,
+                    Discount = p.Discount,
+                    FinalPrice = p.Price - (p.Price * p.Discount / 100),
+                    Rate = p.Rate,
+                    Status = p.Status,
+                    CategoryName = p.Category.Name,
+                    BrandName = p.Brand.Name
+                }).ToList()
+            };
         }
-
         public async Task<ProductDetailsResponse?> GetAsync( int id) 
         {
             var include = new Expression<Func<Product, object>>[]

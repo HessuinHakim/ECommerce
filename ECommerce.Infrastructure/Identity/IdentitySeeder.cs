@@ -22,8 +22,8 @@ namespace ECommerce.Infrastructure.Identity
                 if (!await roleManager.RoleExistsAsync(role))
                     await roleManager.CreateAsync(new IdentityRole(role));
 
-            var AdminEmail = configuration["AdminEmail"];
-            var password = configuration["AdminPassword"];
+            var AdminEmail = configuration["AdminSeed:Email"];
+            var password = configuration["AdminSeed:Password"];
 
             if (string.IsNullOrWhiteSpace(AdminEmail) || string.IsNullOrWhiteSpace(password))
                 return;
@@ -40,6 +40,7 @@ namespace ECommerce.Infrastructure.Identity
                     EmailConfirmed = true
                 };
             var result = await userManager.CreateAsync(admin, password);
+            
             if (!result.Succeeded)
                 throw new InvalidOperationException(
                     "Failed to create admin: " + string.Join(", ", result.Errors.Select(e => e.Description)));

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ECommerce.Application.DTOs.Products
+namespace ECommerce.Application.DTOs.Products.Responses
 {
     public record ProductDetailsResponse
     {

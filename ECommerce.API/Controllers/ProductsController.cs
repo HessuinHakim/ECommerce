@@ -1,5 +1,6 @@
 ﻿using ECommerce.Application.DTOs.Files;
-using ECommerce.Application.DTOs.Products;
+using ECommerce.Application.DTOs.Pagination;
+using ECommerce.Application.DTOs.Products.Requests;
 using ECommerce.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -9,7 +10,6 @@ namespace ECommerce.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize(Roles = "Admin")]
     public class ProductsController : ControllerBase
     {
         private readonly IProductService _service;
@@ -24,12 +24,8 @@ namespace ECommerce.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
-        {
-            var products = await _service.GetAllAsync();
-            return products is null ? NotFound() : Ok(products);
-        }
-
+        public async Task<IActionResult> GetAll([FromQuery] ProductQueryParamsDTO query)
+         => Ok(await _service.GetAllAsync(query));
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
         {
@@ -39,6 +35,8 @@ namespace ECommerce.API.Controllers
 
         [HttpPost]
         [Consumes("multipart/form-data")]
+        [Authorize(Roles = "Admin")]
+
         public async Task<IActionResult> Create([FromForm] CreateProductRequest request, IFormFile mainImg)
         {
             await using var stream = mainImg.OpenReadStream();
@@ -49,6 +47,8 @@ namespace ECommerce.API.Controllers
         }
         [HttpPatch("{id}")]
         [Consumes("multipart/form-data")]
+        [Authorize(Roles = "Admin")]
+
         public async Task<IActionResult> Update(int id, [FromForm] UpdateProductRequest request, IFormFile? mainImg)
         {
             FileUpload? upload = null;
@@ -70,6 +70,8 @@ namespace ECommerce.API.Controllers
             }
         }
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
+
         public async Task<IActionResult> Delete(int id)
             => await _service.DeleteAsync(id) ? NoContent() : NotFound();
 

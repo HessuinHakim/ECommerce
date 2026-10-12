@@ -30,8 +30,7 @@ namespace ECommerce.Infrastructure.Configuration
             builder.Property(x => x.ValidTo)
                 .IsRequired();
 
-            builder.Property(x => x.IsValid)
-                .IsRequired();
+        
 
             builder.Property(x => x.MaxUsage)
                 .IsRequired();

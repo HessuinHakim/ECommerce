@@ -342,10 +342,13 @@ namespace ECommerce.Infrastructure.Migrations
                     b.Property<int>("DiscountType")
                         .HasColumnType("int");
 
-                    b.Property<bool>("IsValid")
+                    b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
                     b.Property<int>("MaxUsage")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UsedCount")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("ValidTo")

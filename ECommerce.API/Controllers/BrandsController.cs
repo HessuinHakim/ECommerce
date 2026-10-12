@@ -1,5 +1,6 @@
 ﻿using ECommerce.Application.DTOs.Brands;
 using ECommerce.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -30,6 +31,7 @@ namespace ECommerce.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create(CreateBrandRequest createBrandRequest)
         {
             var brand = await _service.CreateAsync(createBrandRequest);
@@ -39,14 +41,20 @@ namespace ECommerce.API.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
+
         public async Task<IActionResult> Update(int id, UpdateBrandRequest updateBrandRequest)
             => await _service.UpdateAsync(id, updateBrandRequest) ? NoContent() : NotFound();
 
         [HttpPatch("{id}")]
+        [Authorize(Roles = "Admin")]
+
         public async Task<IActionResult> Patch(int id, PatchBrandRequest patchBrandRequest)
             => await _service.PatchAsync(id, patchBrandRequest) ? NoContent() : NotFound();
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
+
         public async Task<IActionResult> Delete(int id)
             => await _service.DeleteAsync(id) ? NoContent() : NotFound();
     }

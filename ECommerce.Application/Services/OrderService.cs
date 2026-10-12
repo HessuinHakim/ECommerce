@@ -16,11 +16,12 @@ namespace ECommerce.Application.Services
         private readonly IRepository<Product> _products;
         private readonly IRepository<Order> _orders;
         private readonly IUnitOfWork _uow;
-
+        private readonly IPromotionService _promotions;
         public OrderService(IRepository<Cart> carts, IRepository<Product> products,
-                            IRepository<Order> orders, IUnitOfWork uow)
+                            IRepository<Order> orders, IUnitOfWork uow, IPromotionService promotions)
         {
             _carts = carts; _products = products; _orders = orders; _uow = uow;
+            _promotions = promotions;
         }
 
         public async Task<(OrderResponse?, string?)> CheckoutAsync(string userId, CheckoutRequest request)
@@ -69,6 +70,20 @@ namespace ECommerce.Application.Services
                 }
 
                 order.Subtotal = order.Items.Sum(i => i.UnitPrice * i.Count);
+                if (!string.IsNullOrWhiteSpace(request.PromotionCode))
+                {
+                    var (promo, discount, error) = await _promotions.ValidateAsync(request.PromotionCode, order.Subtotal);
+                    if (promo is null)
+                    {
+                        await _uow.RollbackTransactionAsync();
+                        return (null, error);
+                    }
+
+                    order.DiscountAmount = discount;
+                    order.PromotionCode = promo.Code;
+                    promo.UsedCount++;      
+                }
+                order.Total = order.Subtotal - order.DiscountAmount;
                 order.Total = order.Subtotal - order.DiscountAmount; 
 
                 await _orders.CreateAsync(order);

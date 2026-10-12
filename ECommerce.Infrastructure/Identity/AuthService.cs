@@ -62,8 +62,8 @@ namespace ECommerce.Infrastructure.Identity
             await _userManager.AddToRoleAsync(user, Roles.Customer);
             await SendConfirmationEmailAsync(user);
 
-            return await BuildResponseAsync(user);
-      
+            return new AuthResponse { Succeeded = true };
+
         }
 
 
@@ -78,8 +78,8 @@ namespace ECommerce.Infrastructure.Identity
             {
                 return new AuthResponse { Errors = new[] { "Email is not confirmed" } };
             }
-
             return await BuildResponseAsync(user);
+
         }
         
      

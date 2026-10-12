@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
-namespace ECommerce.Application.DTOs.Products
+namespace ECommerce.Application.DTOs.Products.Requests
 {
     public record UpdateProductRequest
     {
